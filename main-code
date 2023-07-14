@@ -1,0 +1,116 @@
+import requests
+import datetime
+
+
+def get_url_now():
+    """Ask a location and create a URL link"""
+    while True:
+        api_key = "07d479dcaebd086d6db94d1178495a96"
+        ask_location = input("Where would you like to get data from? ").strip().lower().title()
+        link = f"https://api.openweathermap.org/data/2.5/weather?q={ask_location}&appid={api_key}"
+
+        req = requests.get(link)
+
+        # If the status code is 200 (a valid api call) return the link else again
+        if req.status_code == 200:
+            return link
+        else:
+            print(f"Your input: {ask_location} is invalid. Please try again!")
+
+
+"""
+def get_url_predictions():
+    api_key = "07d479dcaebd086d6db94d1178495a96"
+
+    cnt = 16
+    link = f"api.openweathermap.org/data/2.5/forecast/daily?id={city ID}&cnt={cnt}&appid={api_key}"
+    # In construction
+"""
+
+
+def api_call(link):
+    """Make an api call with the url we made"""
+    # If the status code is 200 (a valid api call) return the link else again
+
+    try:
+        req = requests.get(link)
+
+        if req.status_code == 200:
+            print(f"Status code: {req.status_code}\n")
+            return req
+        else:
+            print(f"System Error restart program!")
+
+    except (requests.exceptions.RequestException, requests.exceptions.HTTPError, requests.exceptions.ConnectionError,
+            requests.exceptions.Timeout, requests.exceptions.TooManyRedirects):
+
+        print(f"System Error restart program!")
+
+
+"""
+def ask_data():
+    how = input(f"which data would you like to see?")
+    # In construction
+"""
+
+
+def get_data_now(req):
+    """Scrap all the data we need from the api call"""
+    # Get all the data we need from our dictionary we have from the json call
+
+    try:
+
+        file = req.json()
+        place = file['name']
+        weather = file['weather'][0]['main']
+        description = file['weather'][0]['description']
+
+        diff = 273.15
+        temp_max = file['main']['temp_max'] - diff
+        temp_max = round(int(temp_max))
+
+        temp_min = file['main']['temp_min'] - diff
+        temp_min = round(int(temp_min))
+
+        feels_like = file['main']['feels_like'] - diff
+        feels_like = round(float(feels_like))
+
+        sunrise = file['sys']['sunrise']
+        sunrise_full = datetime.datetime.fromtimestamp(sunrise)
+        sunrise_time = sunrise_full.time()
+
+        sunset = file['sys']['sunset']
+        sunset_full = datetime.datetime.fromtimestamp(sunset)
+        sunset_time = sunset_full.time()
+
+        return place, weather, description, temp_max, temp_min, feels_like, sunrise_time, sunset_time
+
+    except (KeyError, ValueError, IndexError, TypeError, AttributeError):
+        print(f"System Error restart program!")
+
+
+def show_data_now(place, weather, description, temp_max, temp_min, feels_like, sunrise_time, sunset_time):
+    """print all the data we scraped from get_data"""
+
+    # Print the place, status and description
+    print(f"Place: {place}")
+    time = datetime.datetime.now()
+    print(f"Time: {time.strftime('%H:%M')}")
+    print(f"Status: {weather}")
+    print(f"Description: {description}\n")
+
+    # Print the max temp, min temp and feel temp
+    print(f"Max temp: {temp_max}°C")
+    print(f"Min temp: {temp_min}°C")
+    print(f"Temp feels like: {feels_like}°C\n")
+
+    # Print the sunrise and sunset time
+    print(f"Sunrise time: {sunrise_time}")
+    print(f"Sunset time: {sunset_time}")
+
+
+if __name__ == '__main__':
+    r = get_url_now()
+    api = api_call(r)
+    placeT, weatherT, descriptionT, temp_maxT, temp_minT, feels_likeT, sunrise_timeT, sunset_timeT = get_data_now(api)
+    show_data_now(placeT, weatherT, descriptionT, temp_maxT, temp_minT, feels_likeT, sunrise_timeT, sunset_timeT)
