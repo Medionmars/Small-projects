@@ -1,0 +1,100 @@
+from time import sleep
+import os
+
+
+def read_file():
+    """Here you can read the notes that te person made"""
+    filename = input("What is the name of the note block? ")
+    directory = os.path.dirname(os.path.abspath(__file__))
+
+    file_path = os.path.join(directory, "..", "noty_store_server", filename)
+
+    try:
+        with open(file_path) as f:
+            lines = f.read()
+            print(f"Here is {filename}:")
+            print(lines)
+
+    except FileNotFoundError:
+        print(f"We couldn't find {filename} pleas try again")
+
+
+def start_screen():
+    """This is the first screen what people see"""
+
+    print("\nWelcome to Noty")
+    ask_action = input("Would you like to read a note block are write a new one \n1. Read\n2. Write\n3. See\n4. Delete?"
+                       " ").strip().lower()
+
+    if ask_action == 'write':
+        open_file()
+    if ask_action == 'read':
+        read_file()
+    if ask_action == 'see':
+        see_names()
+    if ask_action == 'delete':
+        delete_file()
+
+
+def delete_file():
+    """In this function people can delete their notes"""
+
+    file = input("Which note would you like to delete? ").strip()
+
+    try:
+
+        directory = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(directory, "..", "noty_store_server", file)
+        os.remove(file_path)
+    except FileNotFoundError:
+        print(f"We couldn't find {file}. Please check the file name or try again.")
+    except PermissionError:
+        print(f"You don't have permission to delete {file}")
+    else:
+        print(f"We succsefly deleted {file}")
+
+
+def see_names():
+    """Here people can see all the note files names they made"""
+
+    try:
+        noty_store_server = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "noty_store_server")
+        file_names = os.listdir(noty_store_server)
+
+        print("This are your note blocks:")
+        for file_name in file_names:
+            if os.path.isfile(os.path.join(noty_store_server, file_name)):
+                print(file_name)
+
+    except (FileNotFoundError, PermissionError):
+        print("You currently don't have any notes open")
+
+
+def open_file():
+    """From here people can open a file and write text in it"""
+
+    name = input("How would you like to call your note block? MAX 20 characters!\n")[:20]
+    name = str(name)
+    print(f"Creating...\n")
+    sleep(3)
+    print(f"Your note block '{name}' is created!")
+
+    try:
+        while True:
+            lines = input().strip()
+            if lines.lower().strip() == "q":
+                break
+
+            noty_store_server = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "noty_store_server")
+            file_path = os.path.join(noty_store_server, f"{name}")
+
+            with open(file_path, 'a') as f:
+                f.write(lines + "\n")
+
+    except FileNotFoundError:
+        print(f"We couldn't find or create your file. Pleas try again!")
+
+
+if __name__ == '__main__':
+    while True:
+        start_screen()
