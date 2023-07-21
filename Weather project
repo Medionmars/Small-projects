@@ -1,3 +1,5 @@
+# Here we have a small weather app
+
 import requests
 import datetime
 
