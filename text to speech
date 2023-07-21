@@ -1,0 +1,89 @@
+# Here we have a small text to speech project
+
+import pyttsx3
+from time import sleep
+
+
+def info():
+    """Start info the user needs to know"""
+    print("Welcome to text to speech platform OWA")
+    print("type 'q' to exit")
+    name = input("What is your name? ").lower().strip().title()
+    if name == 'Q':
+        exit()
+
+    return name
+
+
+def menu(name):
+    """Here is the start menu from OWA"""
+    try:
+        start = input(f"Hi {name}, would you like to start (y/n)? ").lower().strip()
+        if name == 'q':
+            exit()
+
+        if start == 'y':
+            owa()
+        else:
+            print(f"Sad to hear {name}, let us know when you are ready to start!")
+
+    except ValueError:
+        print("The server is currently overloaded pleas try again!")
+
+
+def owa():
+    """Here we are asking the user what they want to translate"""
+    try:
+        print("Click 'enter' to give the text to OWA")
+        print("Type here the text you wanna translate in to speech:")
+
+        tekst = input().strip().lower()
+        if tekst == 'q':
+            exit()
+        print("\n")
+
+        while True:
+            speed = input("How quick would you like to let OWA speak it\n1. Slow\n2. Normal\n3. Quick\n")\
+                .strip().lower()
+            if speed == 'q':
+                exit()
+
+            if speed == 'slow':
+                speed = 50
+                translate(tekst, speed)
+                break
+
+            if speed == 'normal':
+                speed = 150
+                translate(tekst, speed)
+                break
+
+            if speed == 'quick':
+                speed = 250
+                translate(tekst, speed)
+                break
+            else:
+                print("Wrong input pleas try again!")
+
+    except ValueError:
+        print("The server is currently overloaded pleas try again!")
+
+
+def translate(tekst, speed):
+    """Here we are translating the sound and give it to the engine"""
+    try:
+        engine = pyttsx3.init()
+        engine.setProperty('rate', speed)
+        print("Loading...")
+        sleep(3)
+
+        engine.say(tekst)
+        engine.runAndWait()
+    except ValueError:
+        print("The server is currently overloaded pleas try again!")
+
+
+if __name__ == '__main__':
+    name = info()
+    while True:
+        menu(name)
