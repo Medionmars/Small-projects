@@ -19,7 +19,7 @@ def menu(name):
     """Here is the start menu from OWA"""
     try:
         start = input(f"Hi {name}, would you like to start (y/n)? ").lower().strip()
-        if name == 'q':
+        if start == 'q':
             exit()
 
         if start == 'y':
